@@ -1,0 +1,25 @@
+- name: include OS-specific variables
+  include_vars: "{{ ansible_os_family }}.yml"
+  tags: haproxy
+  
+- include: "{{ ansible_os_family }}.yml"
+  tags: haproxy
+  become: yes
+
+- name: copy haproxy config
+  template:
+    src: haproxy.cfg.j2
+    dest: /etc/haproxy/haproxy.cfg
+    mode: 0600
+  notify:
+    - restart haproxy
+  tags: haproxy
+  become: yes
+
+- name: enable haproxy service
+  service:
+    name: haproxy
+    state: started
+    enabled: yes
+  tags: haproxy
+  become: yes

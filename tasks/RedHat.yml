@@ -1,0 +1,31 @@
+- name: install haproxy
+  yum: name={{item}} state=present
+  with_items:
+    - haproxy
+
+- name: enable firewalld service
+  service:
+    name: firewalld
+    state: started
+    enabled: yes
+  tags: firewalld
+
+- name: configure firewalld
+  firewalld:
+    port: "{{haproxy_listen_port}}/tcp"
+    permanent: true
+    state: enabled
+  notify: restart firewalld
+  tags: firewalld
+
+- name: configure firewalld
+  firewalld:
+    port: "{{haproxy_admin_port}}/tcp"
+    permanent: true
+    state: enabled
+  notify: restart firewalld
+  tags: firewalld
+
+- name: selinux allow binding haproxy
+  shell: setsebool -P haproxy_connect_any 1
+  when: ansible_selinux is defined and ansible_selinux.status == "enabled"

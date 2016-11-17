@@ -1,0 +1,9 @@
+haproxy_type: squid
+haproxy_backend_servers:
+  - 192.168.0.1:3128
+  - 192.168.0.2:3128
+  - 192.168.0.3:3128
+haproxy_stats_password: "{{haproxy_vault_stats_password}}"
+haproxy_listen_ip: 0.0.0.0
+haproxy_listen_port: 8000
+haproxy_admin_port: 81

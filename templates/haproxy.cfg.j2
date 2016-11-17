@@ -1,0 +1,32 @@
+global
+    #chroot /usr/share/haproxy
+    user haproxy
+    group haproxy
+    #daemon
+
+defaults
+    maxconn 3500
+    timeout connect 5000ms
+    timeout client 50000ms
+    timeout server 50000ms
+
+{% if haproxy_type == 'squid' %}
+# reverse proxy-squid
+listen squid {{haproxy_listen_ip}}:{{haproxy_listen_port}}
+    mode http
+    cookie  SERVERID insert indirect nocache
+    balance roundrobin
+    option httpclose
+    option forwardfor header X-Client
+    {% for server in haproxy_backend_servers %}
+    server  squid{{loop.index}} {{server}} check inter 2000 rise 2 fall 5
+    {% endfor %}
+{% endif %}
+
+listen admin_stats {{haproxy_listen_ip}}:{{haproxy_admin_port}}
+    mode http
+    stats enable
+    stats hide-version
+    stats uri       /stats
+    stats realm     Global\ statistics
+    stats auth      haproxy:{{haproxy_stats_password}}
