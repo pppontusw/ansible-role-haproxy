@@ -7,3 +7,35 @@ haproxy_stats_password: "{{haproxy_vault_stats_password}}"
 haproxy_listen_ip: 0.0.0.0
 haproxy_listen_port: 8000
 haproxy_admin_port: 81
+
+#haproxy_custom_config: |
+# global
+#     #chroot /usr/share/haproxy
+#     user haproxy
+#     group haproxy
+#     #daemon
+# 
+# defaults
+#     maxconn 3500
+#     timeout connect 5000ms
+#     timeout client 50000ms
+#     timeout server 50000ms
+# 
+# # reverse proxy-squid
+# listen squid {{haproxy_listen_ip}}:{{haproxy_listen_port}}
+#     mode http
+#     cookie  SERVERID insert indirect nocache
+#     balance roundrobin
+#     option httpclose
+#     option forwardfor header X-Client
+#     {% for server in haproxy_backend_servers %}
+#     server  squid{{loop.index}} {{server}} check inter 2000 rise 2 fall 5
+#     {% endfor %}
+# 
+# listen admin_stats {{haproxy_listen_ip}}:{{haproxy_admin_port}}
+#     mode http
+#     stats enable
+#     stats hide-version
+#     stats uri       /stats
+#     stats realm     Global\ statistics
+#     stats auth      haproxy:{{haproxy_stats_password}}

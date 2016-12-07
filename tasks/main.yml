@@ -6,7 +6,7 @@
   tags: haproxy
   become: yes
 
-- name: copy haproxy config
+- name: copy haproxy config from template
   template:
     src: haproxy.cfg.j2
     dest: /etc/haproxy/haproxy.cfg
@@ -15,6 +15,18 @@
     - restart haproxy
   tags: haproxy
   become: yes
+  when: haproxy_custom_config is not defined
+
+- name: copy haproxy custom config
+  copy:
+    content: "{{haproxy_custom_config}}"
+    dest: /etc/haproxy/haproxy.cfg
+    mode: 0600
+  notify:
+    - restart haproxy
+  tags: haproxy
+  become: yes
+  when: haproxy_custom_config is defined
 
 - name: enable haproxy service
   service:
